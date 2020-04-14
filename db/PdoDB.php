@@ -1,6 +1,7 @@
 <?php
 /**
- * Author: yorks
+ * Author: york
+ * Email: yorkshp@gmail.com
  * Date: 01.04.2020
  */
 namespace App;
@@ -14,13 +15,12 @@ use PDOException;
  * Class PdoDB
  * @package App
  *
- * TODO: create custom queries
  */
 abstract class PdoDB extends Database
 {
 
-    /** @var null|\PDO  */
-    public $connection = null;
+    /** @var PDO|null */
+    public $connection;
 
     /**
      * @param string $host
@@ -35,9 +35,7 @@ abstract class PdoDB extends Database
             $this->connection = new \PDO("mysql:host={$host};dbname={$database}", $user, $password);
             $this->connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
             return true;
-        }
-        catch(PDOException $e)
-        {
+        } catch (PDOException $e) {
             throw new PDOException($e);
         }
     }
@@ -58,7 +56,7 @@ abstract class PdoDB extends Database
      */
     public function query($query)
     {
-        return $this->all($query);
+        return $this->connection->prepare($query)->execute();
     }
 
     /**

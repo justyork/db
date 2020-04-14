@@ -1,6 +1,7 @@
 <?php
 /**
- * Author: yorks
+ * Author: york
+ * Email: yorkshp@gmail.com
  * Date: 01.04.2020
  */
 require ('./db/DB.php');

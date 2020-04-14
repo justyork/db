@@ -1,6 +1,7 @@
 <?php
 /**
- * Author: yorks
+ * Author: york
+ * Email: yorkshp@gmail.com
  * Date: 01.04.2020
  */
 
@@ -16,7 +17,7 @@ class DB extends PdoDB
      * @param $user
      * @param $password
      * @param $database
-     * TODO передавать последним параметром тип используемого драйвера
+     * TODO подгружать конкретный драйвер БД
      */
     public function __construct($host, $user, $password, $database)
     {

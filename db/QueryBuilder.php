@@ -1,17 +1,19 @@
 <?php
 /**
- * Author: yorks
+ * Author: york
+ * Email: yorkshp@gmail.com
  * Date: 01.04.2020
  */
 
 namespace App;
+require_once('Where.php');
 
 
 /**
  * Class QueryBuilder
  * @package App
  */
-class QueryBuilder
+class QueryBuilder extends Where
 {
     protected $query = [];
     protected $parent;
@@ -40,7 +42,6 @@ class QueryBuilder
     /**
      * @param $where
      * @return QueryBuilder
-     * TODO: Parse from array
      */
     public function where($where): QueryBuilder
     {
@@ -85,7 +86,61 @@ class QueryBuilder
     public function groupBy($group): QueryBuilder
     {
         $this->query['group'] = $group;
-        return  $this;
+        return $this;
+    }
+
+    /** Join inner
+     * @param $table
+     * @param $on
+     * @return QueryBuilder
+     */
+    public function join($table, $on): QueryBuilder
+    {
+        return $this->joinInner($table, $on);
+    }
+
+    /** Joint left
+     * @param $table
+     * @param $on
+     * @return QueryBuilder
+     */
+    public function joinLeft($table, $on): QueryBuilder
+    {
+        $this->query['join'] = ['LEFT', $table, $on];
+        return $this;
+    }
+
+    /** Join right
+     * @param $table
+     * @param $on
+     * @return QueryBuilder
+     */
+    public function joinRight($table, $on): QueryBuilder
+    {
+        $this->query['join'] = ['RIGHT', $table, $on];
+        return $this;
+    }
+
+    /** Join inner
+     * @param $table
+     * @param $on
+     * @return QueryBuilder
+     */
+    public function joinInner($table, $on): QueryBuilder
+    {
+        $this->query['join'] = ['INNER', $table, $on];
+        return $this;
+    }
+
+    /** Join outer
+     * @param $table
+     * @param $on
+     * @return QueryBuilder
+     */
+    public function joinOuter($table, $on): QueryBuilder
+    {
+        $this->query['join'] = ['OUTER', $table, $on];
+        return $this;
     }
 
     /**
@@ -99,18 +154,22 @@ class QueryBuilder
         }
 
         $query = 'SELECT ' . $this->query['select'];
-        $query .= ' FROM '.$this->query['table'];
+        $query .= ' FROM ' . $this->query['table'];
 
+        if (isset($this->query['join'])) {
+            $join = $this->query['join'];
+            $query .= " JOIN {$join[0]} {$join[1]} ON {$join[2]}";
+        }
         if (isset($this->query['where']))
-            $query .= ' WHERE '.$this->query['where'];
+            $query .= ' WHERE ' . $this->executeWhere($this->query['where']);
         if (isset($this->query['order']))
-            $query .= ' ORDER BY '.$this->query['order'];
+            $query .= ' ORDER BY ' . $this->query['order'];
         if (isset($this->query['group']))
-            $query .= ' GROUP BY '.$this->query['group'];
+            $query .= ' GROUP BY ' . $this->query['group'];
         if (isset($this->query['limit']))
-            $query .= ' LIMIT '.$this->query['limit'];
+            $query .= ' LIMIT ' . $this->query['limit'];
         if (isset($this->query['offset']))
-            $query .= ' OFFSET '.$this->query['offset'];
+            $query .= ' OFFSET ' . $this->query['offset'];
 
         return $query;
     }
@@ -148,4 +207,5 @@ class QueryBuilder
         $query = $this->buildQuery();
         return $this->parent->byPk($query);
     }
+
 }
